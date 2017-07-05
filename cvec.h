@@ -1,3 +1,5 @@
+#ifndef __CVEC_H__
+#define __CVEC_H__
 #include<stdlib.h>
 
 #define CVEC(type)                                                            \
@@ -66,3 +68,4 @@ void type ## VecFinish(type ## _vec* vec) {                                   \
 	free(vec->vector);                                                    \
 	free(vec);                                                            \
 }
+#endif
