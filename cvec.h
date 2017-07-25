@@ -1,6 +1,7 @@
 #ifndef __CVEC_H__
 #define __CVEC_H__
 #include<stdlib.h>
+#include<string.h>
 
 #define CVEC(type)                                                            \
 typedef struct {                                                              \
@@ -10,57 +11,65 @@ typedef struct {                                                              \
                                                                               \
 type ## _vec* type ## VecInit(unsigned int count) {                           \
 	type ## _vec* vec = malloc(sizeof(type ## _vec));                     \
-	vec->vector = malloc(sizeof(type) * count);                           \
-	vec->len = count;                                                     \
+	if (vec != NULL) {                                                    \
+		vec->vector = malloc(sizeof(type) * count);                   \
+		vec->len = count;                                             \
+	}                                                                     \
 	return vec;                                                           \
 }                                                                             \
                                                                               \
-void type ## VecRemove(type ## _vec* vec, unsigned int index) {               \
-	type* temp = malloc(sizeof(type) * (vec->len -1));                    \
+void type ## VecRemove(type ## _vec* vec, unsigned int loc) {                 \
+	vec->len--;                                                           \
+	type* tmp = malloc(sizeof(type) * (vec->len));                        \
 	                                                                      \
-	unsigned int i;                                                       \
-	for (i = 0; i < index; i++)                                           \
-		temp[i] = vec->vector[i];                                     \
+	if (tmp != NULL) {                                                    \
+		unsigned int i;                                               \
+		memcpy(tmp, vec->vector, sizeof(type) * loc);                 \
 	                                                                      \
-	for (i = index + 1; i < vec->len; i++)                                \
-		temp[i - 1] = vec->vector[i];                                 \
+		memcpy(&tmp[loc],                                             \
+				&vec->vector[loc + 1],                        \
+				sizeof(type) * ((vec->len) - loc));           \
+	}                                                                     \
 	                                                                      \
 	free(vec->vector);                                                    \
-	vec->vector = temp;                                                   \
-	vec->len--;                                                           \
+	vec->vector = tmp;                                                    \
 }                                                                             \
                                                                               \
-void type ## VecPrepend(type ## _vec* vec, type val, unsigned int index) {    \
-	type* temp = malloc(sizeof(type) * (vec->len + 1));                   \
+void type ## VecPrepend(type ## _vec* vec, type val, unsigned int loc) {      \
+	type* tmp = malloc(sizeof(type) * (vec->len + 1));                    \
 	                                                                      \
-	unsigned int i;                                                       \
-	for (i = 0; i < index; i++)                                           \
-		temp[i] = vec->vector[i];                                     \
-	                                                                      \
-	temp[index] = val;                                                    \
-	                                                                      \
-	for (i = index; i < vec->len; i++)                                    \
-		temp[i + 1] = vec->vector[i];                                 \
+	if (tmp != NULL) {                                                    \
+		unsigned int i;                                               \
+		memcpy(tmp, vec->vector, sizeof(type) * loc);                 \
+		                                                              \
+		tmp[loc] = val;                                               \
+		                                                              \
+		memcpy(&tmp[loc + 1],                                         \
+				&vec->vector[loc],                            \
+				sizeof(type) * ((vec->len) - loc));           \
+	}                                                                     \
 	                                                                      \
 	free(vec->vector);                                                    \
-	vec->vector = temp;                                                   \
+	vec->vector = tmp;                                                    \
 	vec->len++;                                                           \
 }                                                                             \
                                                                               \
-void type ## VecAppend(type ## _vec* vec, type val, unsigned int index) {     \
-	type* temp = malloc(sizeof(type) * (vec->len + 1));                   \
+void type ## VecAppend(type ## _vec* vec, type val, unsigned int loc) {       \
+	type* tmp = malloc(sizeof(type) * (vec->len + 1));                    \
 	                                                                      \
-	unsigned int i;                                                       \
-	for (i = 0; i <= index; i++)                                          \
-		temp[i] = vec->vector[i];                                     \
-	                                                                      \
-	temp[index + 1] = val;                                                \
-	                                                                      \
-	for (i = index + 1; i < vec->len; i++)                                \
-		temp[i + 1] = vec->vector[i];                                 \
+	if (tmp != NULL) {                                                    \
+		unsigned int i;                                               \
+		memcpy(tmp, vec->vector, sizeof(type) * (loc + 1));           \
+		                                                              \
+		tmp[loc + 1] = val;                                           \
+		                                                              \
+		memcpy(&tmp[loc + 2],                                         \
+				&vec->vector[loc + 1],                        \
+				sizeof(type) * (vec->len - loc - 1));         \
+	}                                                                     \
 	                                                                      \
 	free(vec->vector);                                                    \
-	vec->vector = temp;                                                   \
+	vec->vector = tmp;                                                    \
 	vec->len++;                                                           \
 }                                                                             \
                                                                               \
